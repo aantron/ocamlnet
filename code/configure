@@ -779,6 +779,18 @@ if [ $compat_pcre -gt 0 ]; then
 fi
 
 ######################################################################
+# Bigarray
+
+# Since OCaml-5.0.0 "bigarray" is part of the regular stdlib
+v="$(ocamlc -version)"
+case "$v" in
+    [56789]\.*)
+        true ;;
+    *)
+        requires="$requires bigarray" ;;
+esac
+
+######################################################################
 # Netsys
 
 ( cd src/netsys; ./configure )

@@ -121,7 +121,7 @@ module IntSet =
   Set.Make
     (struct
        type t = int
-       let compare (x:t) (y:t) = Pervasives.compare x y
+       let compare (x:t) (y:t) = compare x y
      end
     )
 
@@ -593,57 +593,6 @@ object(self)
     e#abort();
     self # set_state `Aborted
 end
-
-
-
-class ['a] stream_seq_engine x0 (s : ('a -> 'a #engine) Stream.t)  esys =
-object(self)
-  inherit ['a] engine_mixin (`Working 0) esys
-
-  val mutable x = x0
-  val mutable cur_e = aborted_engine esys
-
-  initializer
-    self#next()
-
-  method private next() =
-    match Stream.peek s with
-      | None ->
-	  self # set_state (`Done x)
-      | Some f ->
-	  let _ = Stream.next s in  (* yep, it's "partial" *)
-	  let e =
-	    try (f x :> _ engine)
-	    with error -> const_engine (`Error error) esys in
-	  cur_e <- e;
-	  if is_active e#state then
-	    when_state
-	      ~is_done:(fun x1 -> 
-			  x <- x1;
-			  Unixqueue.epsilon esys self#next
-			    (* avoids stack overflow *)
-		       )
-	      ~is_error:(fun e -> self # set_state (`Error e))
-	      ~is_aborted:(fun () -> self # set_state `Aborted)
-	      ~is_progressing:(fun _ -> self # sseq_count())
-	      e
-	  else
-	    self # set_state e#state
-
-  method abort() =
-    cur_e # abort();
-    self # set_state `Aborted
-
-  method private sseq_count() =
-    match self#state with
-	`Working n ->
-	  self # set_state (`Working (n+1))
-      | _ ->
-	  ()
-end
-
-
-let stream_seq_engine = new stream_seq_engine
 
 
 

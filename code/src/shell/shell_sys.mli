@@ -417,13 +417,13 @@ val from_tstring :
         (Unix.file_descr -> bool)
   (** Same for tagged strings *)
 
-val from_stream :
+val from_seq :
       ?epipe:(unit -> unit) ->     (* default: empty function *)
-      string Stream.t ->
+      string Seq.t ->
         (Unix.file_descr -> bool)
-  (** [from_stream ?epipe s] returns a function which can be
+  (** [from_seq ?epipe s] returns a function which can be
    * used as [producer] argument for [add_producer]. The data transferred
-   * to the subprocess is taken from the string stream [s]. After these data
+   * to the subprocess is taken from the string sequence [s]. After these data
    * are sent, the pipeline is closed.
    *
    * @param epipe This function is called when the pipeline breaks
@@ -431,7 +431,7 @@ val from_stream :
    *    always caught, and implicitly handled by closing the pipeline.
    *)
 
-val add_consumer : 
+val add_consumer :
       ?descr:Unix.file_descr ->     (* default: stdout *)
       consumer:(Unix.file_descr -> bool) ->
       command ->

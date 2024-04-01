@@ -237,11 +237,11 @@ val from_string :
    *    always caught, and implicitly handled by closing the pipeline.
    *)
 
-val from_stream :
+val from_seq :
       ?epipe:(unit -> unit) ->     (* default: empty function *)
-      string Stream.t ->
+      string Seq.t ->
         producer
-  (** Creates a producer taking the data from a stream of strings.
+  (** Creates a producer taking the data from a sequence of strings.
    * After the data are sent, the pipeline is closed.
    *
    * @param epipe This function is called when the pipeline breaks

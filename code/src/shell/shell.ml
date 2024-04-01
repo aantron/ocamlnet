@@ -111,8 +111,8 @@ type producer =
 let from_string ?pos ?len ?epipe s =
   P_fun (Shell_sys.from_string ?pos:pos ?len:len ?epipe:epipe s);;
 
-let from_stream ?epipe s =
-  P_fun (Shell_sys.from_stream ?epipe:epipe s);;
+let from_seq ?epipe s =
+  P_fun (Shell_sys.from_seq ?epipe:epipe s);;
 
 let from_function ~producer () =
   P_fun producer;;

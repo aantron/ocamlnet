@@ -3,6 +3,8 @@
  * Nethttp: Basic definitions for the HTTP protocol
  *)
 
+module Stream = Netstring_stream
+
 type protocol_version = 
     int * int
 type protocol_attribute =
@@ -1009,7 +1011,7 @@ module Header = struct
       snd
       (List.stable_sort
 	 (fun (q1, tok_param1) (q2, tok_param2) ->
-	    Pervasives.compare q2 q1)
+           compare q2 q1)
 	 (List.filter
 	    (fun (q, tok_param) ->
 	       q > 0.0)

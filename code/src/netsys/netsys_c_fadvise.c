@@ -35,7 +35,7 @@ CAMLprim value netsys_fadvise(value fd, value start, value len, value adv) {
     case 3: case 9: adv_int = POSIX_FADV_NOREUSE; break;
     case 4: case 10: adv_int = POSIX_FADV_WILLNEED; break;
     case 5: case 11: adv_int = POSIX_FADV_DONTNEED; break;
-    default: invalid_argument("Netsys.fadvise");
+    default: caml_invalid_argument("Netsys.fadvise");
     };
 
     start_int = Int64_val(start);
@@ -54,7 +54,7 @@ CAMLprim value netsys_fadvise(value fd, value start, value len, value adv) {
 	uerror("posix_fadvise64", Nothing);
     return Val_unit;
 #else
-    invalid_argument("Netsys.fadvise not available");
+    caml_invalid_argument("Netsys.fadvise not available");
 #endif
 }
 

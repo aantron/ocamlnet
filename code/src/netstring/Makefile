@@ -3,7 +3,7 @@ TOP_DIR=../..
 include $(TOP_DIR)/Makefile.conf
 
 OBJECTS  = netconst.cmo netstring_str.cmo netbuffer.cmo netunichar.cmo \
-	   netaux.cmo netstring_tstring.cmo \
+	   netaux.cmo netstring_tstring.cmo netstring_stream.cmo \
            netchannels.cmo netchannels_crypto.cmo netsockaddr.cmo \
 	   netdb.cmo netmappings_asn1.cmo netmappings.cmo netconversion.cmo \
            netulex.cmo netencoding.cmo netstream.cmo netdate.cmo \
@@ -28,7 +28,7 @@ OBJECTS  = netconst.cmo netstring_str.cmo netbuffer.cmo netunichar.cmo \
 
 PKGNAME  = netstring
 
-REQUIRES += $(REGEXP_PROVIDER_MAKE) bigarray
+REQUIRES += $(REGEXP_PROVIDER_MAKE)
 INCLUDES += $(INC_NETSYS)
 INCLUDES += -I ../netstring-pcre
 

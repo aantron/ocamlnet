@@ -133,7 +133,7 @@ open Printf
 
 module Int = struct
   type t = int
-  let compare = (Pervasives.compare : int -> int -> int)
+  let compare = (compare : int -> int -> int)
 end
 
 module IntMap = Map.Make(Int)

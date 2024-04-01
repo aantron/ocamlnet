@@ -105,12 +105,6 @@ val seq_engine : 'a #engine -> ('a -> 'b #engine) -> 'b engine
 class ['a, 'b] qseq_engine : 'a #engine -> ('a -> 'b #engine) -> ['b] engine
 val qseq_engine : 'a #engine -> ('a -> 'b #engine) -> 'b engine
 
-class ['a] stream_seq_engine : 'a -> ('a -> 'a #engine) Stream.t -> 
-                               Unixqueue.event_system -> ['a] engine
-
-val stream_seq_engine : 'a -> ('a -> 'a #engine) Stream.t -> 
-                         Unixqueue.event_system -> 'a engine
-
 class ['a, 'b] sync_engine : 'a #engine -> 'b #engine -> ['a * 'b] engine
 
 val sync_engine : 'a #engine -> 'b #engine -> ('a * 'b) engine

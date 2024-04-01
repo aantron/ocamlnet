@@ -93,7 +93,7 @@ CAMLprim value netsys_ioprio_get(value target) {
     }
 
     if (ioprio == -1)
-	uerror("ioprio_get", Nothing);
+	caml_uerror("ioprio_get", Nothing);
 
     ioprio_class = ioprio >> IOPRIO_CLASS_SHIFT;
     ioprio_data = ioprio & IOPRIO_PRIO_MASK;
@@ -121,7 +121,7 @@ CAMLprim value netsys_ioprio_get(value target) {
 
 #else
     /* not ioprio_supported: */
-    unix_error(ENOSYS, "ioprio_get", Nothing);
+    caml_unix_error(ENOSYS, "ioprio_get", Nothing);
 #endif
     /* ioprio_supported */
 }
@@ -180,12 +180,12 @@ CAMLprim value netsys_ioprio_set(value target, value ioprio_arg) {
     }
 
     if (sysres == -1)
-	uerror("ioprio_set", Nothing);
+	caml_uerror("ioprio_set", Nothing);
 
     return Val_unit;
 #else
     /* not ioprio_supported: */
-    unix_error(ENOSYS, "ioprio_set", Nothing);
+    caml_unix_error(ENOSYS, "ioprio_set", Nothing);
 #endif
     /* ioprio_supported */
 }

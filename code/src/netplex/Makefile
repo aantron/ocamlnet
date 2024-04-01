@@ -36,7 +36,7 @@ include $(TOP_DIR)/Makefile.rules
 
 netplex-admin$(EXEC_SUFFIX): netplex.cma netplex_admin.cmo
 	$(OCAMLC) -o netplex-admin -custom \
-	        -package "bytes unix bigarray str" -linkpkg \
+	        -package "bytes unix str" -linkpkg \
 		netsys_oothr.cma netsys.cma netstring.cma equeue.cma \
 		rpc.cma netplex.cma netplex_admin.cmo
 

@@ -82,7 +82,7 @@ let set_env_var e v x =
   try
     let k = ref 0 in
     iter_env_vars
-      (fun v' x' ->
+      ~f:(fun v' x' ->
 	 if v' = v then begin
 	   !e.(!k) <- v ^ "=" ^ x;
 	   raise Exit
@@ -100,7 +100,7 @@ let get_env_var e v =
   let x = ref "" in
   try
     iter_env_vars
-      (fun v' x' ->
+      ~f:(fun v' x' ->
 	 if v' = v then begin
 	   x := x';
 	   raise Exit
@@ -335,7 +335,7 @@ type process =
 ;;
 
 let dummy_process =
-  { p_command = command "XXX" ();
+  { p_command = command ~filename:"XXX" ();
     p_id = `Dummy;
     p_gid = 0;
     p_status = Some (Unix.WEXITED 0);
@@ -1103,7 +1103,7 @@ let from_string ?pos ?len ?epipe s =
   from_tstring ?pos ?len ?epipe (`String s)
 
 
-let from_stream
+let from_seq
       ?(epipe = fun () -> ())
       s =
   let current_el  = ref None in
@@ -1111,6 +1111,8 @@ let from_stream
 
   let fd_style = ref `Read_write in
   let fd_style_set = ref false in
+
+  let stream = ref s in
 
   function fd ->
     if not !fd_style_set then (
@@ -1120,14 +1122,15 @@ let from_stream
     (* If necessary, try to get the next stream element: *)
     begin match !current_el with
 	None ->
-	  begin try
-	    let x = Stream.next s in
-	    current_el := Some x;
-	    current_pos := 0;
-	  with
-	      Stream.Failure ->
-		()
-	  end
+        begin
+          match !stream() with
+            | Seq.Nil ->
+                ()
+            | Cons(x, tail) ->
+                stream := tail;
+                current_el := Some x;
+                current_pos := 0;
+          end
       | _ ->
 	  ()
     end;

@@ -9,7 +9,7 @@
 
 #include "netsys_c.h"
 
-#ifdef HAVE_NEW_MODIFY
+#if defined(HAVE_NEW_MODIFY) && OCAML_VERSION < 50000
 /* implies FANCY_PAGE_TABLES */
 
 

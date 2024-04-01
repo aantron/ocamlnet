@@ -35,7 +35,7 @@ end
 module Fdescr = struct
   type t = Unix.file_descr
 
-  let compare (a:t) (b:t) = Pervasives.compare a b
+  let compare (a:t) (b:t) = compare a b
 
 end;;
 

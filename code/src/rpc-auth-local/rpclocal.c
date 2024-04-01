@@ -12,6 +12,7 @@
 #include "caml/alloc.h"
 #include "caml/memory.h"
 #include "caml/fail.h"
+#include "caml/unixsupport.h"
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -28,15 +29,6 @@
 #include <ucred.h>
 #endif
 
-
-/**********************************************************************/
-/* From unixsupport.h                                                 */
-/**********************************************************************/
-
-#define Nothing ((value) 0)
-
-extern void unix_error (int errcode, char * cmdname, value arg) Noreturn;
-extern void uerror (char * cmdname, value arg) Noreturn;
 
 /**********************************************************************/
 
@@ -58,7 +50,7 @@ value netsys_get_peer_credentials(value fd) {
     /* BSD, AIX, Cygwin */
     /* http://cr.yp.to/docs/secureipc.html */
     if (getpeereid(Int_val(fd), &uid, &gid) != 0) {
-	uerror("getpeereid", Nothing);
+	caml_uerror("getpeereid", Nothing);
     }
 
 #elif defined(SO_PEERCRED)
@@ -73,7 +65,7 @@ value netsys_get_peer_credentials(value fd) {
 		       SO_PEERCRED,
 		       &credentials,
 		       &len) == -1) {
-	    uerror("getsockopt",Nothing);
+	    caml_uerror("getsockopt",Nothing);
 	};
 	uid = credentials.uid;       /* Effective user ID */
 	gid = credentials.gid;       /* Effective group ID */
@@ -84,24 +76,24 @@ value netsys_get_peer_credentials(value fd) {
 	ucred_t    *ucred;
 	ucred = NULL;			/* must be initialized to NULL */
 	if (getpeerucred(Int_val(fd), &ucred) == -1) {
-	    uerror("getpeerucred",Nothing);
+	    caml_uerror("getpeerucred",Nothing);
 	};
 	if ((uid = ucred_geteuid(ucred)) == -1) {
-	    uerror("ucred_geteuid",Nothing);
+	    caml_uerror("ucred_geteuid",Nothing);
 	    ucred_free(ucred);
 	};
 	if ((gid = ucred_getegid(ucred)) == -1) {
-	    uerror("ucred_getegid",Nothing);
+	    caml_uerror("ucred_getegid",Nothing);
 	    ucred_free(ucred);
 	};
 	ucred_free(ucred);
     }
 #else
-    invalid_argument("get_peer_credentials");
+    caml_invalid_argument("get_peer_credentials");
 #endif
 
     /* Allocate a pair, and put the result into it: */
-    result = alloc_tuple(2);
+    result = caml_alloc_tuple(2);
     Store_field(result, 0, Val_int(uid));
     Store_field(result, 1, Val_int(gid));
 
@@ -140,7 +132,7 @@ value netsys_peek_peer_credentials(value fd) {
 		       SO_PASSCRED,
 		       &one,
 		       sizeof(one)) < 0) {
-	    uerror("setsockopt", Nothing);
+	    caml_uerror("setsockopt", Nothing);
 	};
 
 	memset(&msg, 0, sizeof msg);
@@ -160,7 +152,7 @@ value netsys_peek_peer_credentials(value fd) {
 	 */
 
 	if (recvmsg(Int_val(fd), &msg, MSG_PEEK) < 0) {
-	    uerror("recvmsg", Nothing);
+	    caml_uerror("recvmsg", Nothing);
 	};
 
 	if (msg.msg_controllen == 0 ||
@@ -201,12 +193,12 @@ value netsys_peek_peer_credentials(value fd) {
 		       LOCAL_CREDS,
 		       &one,
 		       sizeof(one)) < 0) {
-	    uerror("setsockopt", Nothing);
+	    caml_uerror("setsockopt", Nothing);
 	};
 
 	memset(&msg, 0, sizeof msg);
 	crmsgsize = CMSG_SPACE(SOCKCREDSIZE(NGROUPS_MAX));
-	crmsg = stat_alloc(crmsgsize);
+	crmsg = caml_stat_alloc(crmsgsize);
 
 	memset(crmsg, 0, crmsgsize);
 	msg.msg_control = crmsg;
@@ -218,19 +210,19 @@ value netsys_peek_peer_credentials(value fd) {
 	iov.iov_len = 1;
 
 	if (recvmsg(Int_val(fd), &msg, MSG_PEEK) < 0) {
-	    stat_free(crmsg);
-	    uerror("recvmsg", Nothing);
+	    caml_stat_free(crmsg);
+	    caml_uerror("recvmsg", Nothing);
 	};
 
 	if (msg.msg_controllen == 0 ||
 	    (msg.msg_flags & MSG_CTRUNC) != 0) {
-	    stat_free(crmsg);
+	    caml_stat_free(crmsg);
 	    raise_not_found();
 	};
 	cmp = CMSG_FIRSTHDR(&msg);
 	if (cmp->cmsg_level != SOL_SOCKET ||
 	    cmp->cmsg_type != SCM_CREDS) {
-	    stat_free(crmsg);
+	    caml_stat_free(crmsg);
 	    raise_not_found();
 	};
 
@@ -241,12 +233,12 @@ value netsys_peek_peer_credentials(value fd) {
 	free(crmsg);
     }
 #else
-    invalid_argument("peek_peer_credentials");
+    caml_invalid_argument("peek_peer_credentials");
 #endif
 #endif
 
     /* Allocate a pair, and put the result into it: */
-    result = alloc_tuple(2);
+    result = caml_alloc_tuple(2);
     Store_field(result, 0, Val_int(uid));
     Store_field(result, 1, Val_int(gid));
 

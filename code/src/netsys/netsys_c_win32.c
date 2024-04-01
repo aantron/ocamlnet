@@ -57,7 +57,7 @@ CAMLprim value netsys_fill_random (value s) {
     };
     return Val_unit;
 #else
-    invalid_argument("netsys_fill_random");
+    caml_invalid_argument("netsys_fill_random");
 #endif
 }
 
@@ -76,7 +76,7 @@ CAMLprim value netsys_get_full_path_name(value path) {
     };
     return caml_copy_string(buffer);
 #else
-    invalid_argument("netsys_get_full_path_name");
+    caml_invalid_argument("netsys_get_full_path_name");
 #endif
 }
 
@@ -94,7 +94,7 @@ CAMLprim value netsys_get_long_path_name(value path) {
     };
     return caml_copy_string(buffer);
 #else
-    invalid_argument("netsys_get_long_path_name");
+    caml_invalid_argument("netsys_get_long_path_name");
 #endif
 }
 
@@ -112,7 +112,7 @@ CAMLprim value netsys_modify_close_on_exec (value fd, value new_val) {
     }
     return Val_unit;
 #else
-    invalid_argument("netsys_modify_close_on_exec");
+    caml_invalid_argument("netsys_modify_close_on_exec");
 #endif
 }
 
@@ -131,7 +131,7 @@ CAMLprim value netsys_test_close_on_exec (value fd) {
 	    Handle_val(fd), r ? "true" : "false");
     return Val_bool(r);
 #else
-    invalid_argument("netsys_test_close_on_exec");
+    caml_invalid_argument("netsys_test_close_on_exec");
 #endif
 }
 
@@ -145,7 +145,7 @@ CAMLprim value netsys_is_crt_fd (value fd, value crt_fd) {
     else
 	return Val_bool(fd1 == Int_val(crt_fd));
 #else
-    invalid_argument("netsys_is_crt_fd");
+    caml_invalid_argument("netsys_is_crt_fd");
 #endif
 }
 
@@ -224,7 +224,7 @@ CAMLprim value netsys_create_event(value dummy) {
 
     return alloc_event(e);
 #else
-    invalid_argument("netsys_create_event");
+    caml_invalid_argument("netsys_create_event");
 #endif
 }
 
@@ -246,7 +246,7 @@ CAMLprim value netsys_close_event(value ev) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_close_event");
+    caml_invalid_argument("netsys_close_event");
 #endif
 }
 
@@ -259,7 +259,7 @@ CAMLprim value netsys_set_auto_close_event_proxy(value ev, value flag) {
     e->auto_close = Bool_val(flag);
     return Val_unit;
 #else
-    invalid_argument("netsys_set_auto_close_event_proxy");
+    caml_invalid_argument("netsys_set_auto_close_event_proxy");
 #endif
 }
 
@@ -276,7 +276,7 @@ CAMLprim value netsys_set_event(value ev) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_set_event");
+    caml_invalid_argument("netsys_set_event");
 #endif
 }
 
@@ -292,7 +292,7 @@ CAMLprim value netsys_reset_event(value ev) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_reset_event");
+    caml_invalid_argument("netsys_reset_event");
 #endif
 }
 
@@ -312,7 +312,7 @@ CAMLprim value netsys_test_event(value ev) {
 
     return Val_bool(n == WAIT_OBJECT_0);
 #else
-    invalid_argument("netsys_test_event");
+    caml_invalid_argument("netsys_test_event");
 #endif
 }
 
@@ -331,10 +331,10 @@ CAMLprim value netsys_event_wait(value ev, value tmo) {
     };
 
     e = event_val(ev);
-    enter_blocking_section();
+    caml_enter_blocking_section();
     n = WaitForSingleObject(e->ev, wtmo);
     err = GetLastError();
-    leave_blocking_section();
+    caml_leave_blocking_section();
     if (n == WAIT_FAILED) {
 	win32_maperr(err);
 	uerror("netsys_event_wait/WaitForSingleObject", Nothing);
@@ -342,7 +342,7 @@ CAMLprim value netsys_event_wait(value ev, value tmo) {
 
     return Val_bool(n == WAIT_OBJECT_0);
 #else
-    invalid_argument("netsys_event_wait");
+    caml_invalid_argument("netsys_event_wait");
 #endif
 }
 
@@ -353,7 +353,7 @@ CAMLprim value netsys_event_descr(value ev) {
     e = event_val(ev);
     return netsysw32_win_alloc_handle(e->ev_proxy);
 #else
-    invalid_argument("netsys_event_descr");
+    caml_invalid_argument("netsys_event_descr");
 #endif
 }
 
@@ -383,7 +383,7 @@ CAMLprim value netsys_wsa_event_select(value ev, value fdv, value evmaskv) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_wsa_event_select");
+    caml_invalid_argument("netsys_wsa_event_select");
 #endif
 }
 
@@ -391,7 +391,7 @@ CAMLprim value netsys_wsa_maximum_wait_events(value dummy) {
 #ifdef _WIN32
     return Val_int(WSA_MAXIMUM_WAIT_EVENTS);
 #else
-    invalid_argument("netsys_wsa_maximum_wait_events");
+    caml_invalid_argument("netsys_wsa_maximum_wait_events");
 #endif
 }
 
@@ -428,9 +428,9 @@ CAMLprim value netsys_wsa_wait_for_multiple_events(value fdarray, value tmov) {
 	    tmo = tmo0;
 	else
 	    tmo = INFINITE;
-	enter_blocking_section();
+	caml_enter_blocking_section();
 	r = SleepEx(tmo, 1);
-	leave_blocking_section();
+	caml_leave_blocking_section();
 	
 	if (r == WAIT_IO_COMPLETION) {
 	    win32_maperr(EINTR);
@@ -445,10 +445,10 @@ CAMLprim value netsys_wsa_wait_for_multiple_events(value fdarray, value tmov) {
 	else
 	    tmo = INFINITE;
 	dprintf("WSAWaitForMultipleEvents start tmo=%u\n", tmo);
-	enter_blocking_section();
+	caml_enter_blocking_section();
 	r = WSAWaitForMultipleEvents(n, earray, 0, tmo, 1);
 	err = WSAGetLastError();
-	leave_blocking_section();
+	caml_leave_blocking_section();
 	dprintf("WSAWaitForMultipleEvents end code=%u\n", r);
     
 	if (r == WSA_WAIT_FAILED) {
@@ -476,9 +476,9 @@ CAMLprim value netsys_wsa_wait_for_multiple_events(value fdarray, value tmov) {
 	}
     }
     
-    invalid_argument("netsys_wsa_wait_for_multiple_events: bad return value from Win32");
+    caml_invalid_argument("netsys_wsa_wait_for_multiple_events: bad return value from Win32");
 #else
-    invalid_argument("netsys_wsa_wait_for_multiple_events");
+    caml_invalid_argument("netsys_wsa_wait_for_multiple_events");
 #endif
 }
 
@@ -538,7 +538,7 @@ CAMLprim value netsys_wsa_enum_network_events(value fdv, value ev) {
 
     return Val_int(r);
 #else
-    invalid_argument("netsys_wsa_enum_network_events");
+    caml_invalid_argument("netsys_wsa_enum_network_events");
 #endif
 }
 
@@ -626,20 +626,20 @@ static struct pipe_helper * alloc_pipe_helper (HANDLE h, HANDLE cn_ev) {
 	uerror("alloc_pipe_helper/CreateEvent", Nothing);
     };
 
-    rd_ovrlp = stat_alloc(sizeof(OVERLAPPED));
+    rd_ovrlp = caml_stat_alloc(sizeof(OVERLAPPED));
     ZeroMemory(rd_ovrlp, sizeof(OVERLAPPED));
     rd_ovrlp->hEvent = rd_ev;
 
-    wr_ovrlp = stat_alloc(sizeof(OVERLAPPED));
+    wr_ovrlp = caml_stat_alloc(sizeof(OVERLAPPED));
     ZeroMemory(wr_ovrlp, sizeof(OVERLAPPED));
     wr_ovrlp->hEvent = wr_ev;
 
-    cn_ovrlp = stat_alloc(sizeof(OVERLAPPED));
+    cn_ovrlp = caml_stat_alloc(sizeof(OVERLAPPED));
     ZeroMemory(cn_ovrlp, sizeof(OVERLAPPED));
     if (cn_ev != INVALID_HANDLE_VALUE)
 	cn_ovrlp->hEvent = cn_ev;
 
-    ph = stat_alloc(sizeof(struct pipe_helper));
+    ph = caml_stat_alloc(sizeof(struct pipe_helper));
     ph->pipe_handle = h;
     ph->pipe_is_open = 1;
     ph->pipe_is_server = 0;
@@ -680,10 +680,10 @@ static void free_pipe_helper(struct pipe_helper *ph) {
     if (ph->pipe_cn_ev != INVALID_HANDLE_VALUE)
 	CloseHandle(ph->pipe_cn_ev);
     /* do nothing about pipe_signal */
-    stat_free(ph->pipe_rd_ovrlp);
-    stat_free(ph->pipe_wr_ovrlp);
-    stat_free(ph->pipe_cn_ovrlp);
-    stat_free(ph);
+    caml_stat_free(ph->pipe_rd_ovrlp);
+    caml_stat_free(ph->pipe_wr_ovrlp);
+    caml_stat_free(ph->pipe_cn_ovrlp);
+    caml_stat_free(ph);
 }
 
 
@@ -1032,7 +1032,7 @@ CAMLprim value netsys_create_local_named_pipe(value name, value mode,
 	    ph->pipe_handle);
     return r;
 #else
-    invalid_argument("netsys_create_local_named_pipe");
+    caml_invalid_argument("netsys_create_local_named_pipe");
 #endif
 }
 
@@ -1130,7 +1130,7 @@ CAMLprim value netsys_pipe_listen(value phv) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_pipe_listen");
+    caml_invalid_argument("netsys_pipe_listen");
 #endif
 }
 
@@ -1175,13 +1175,13 @@ CAMLprim value netsys_pipe_deafen(value phv) {
     /* Check whether the overlapped ops are done: */
     check_for_pending_operations(ph);
     if (ph->pipe_cn_ovrlp_started) {
-	failwith("netsys_pipe_unlisten: cannot stop pending ConnectNamedPipe");
+	caml_failwith("netsys_pipe_unlisten: cannot stop pending ConnectNamedPipe");
     };
     if (ph->pipe_rd_ovrlp_started) {
-	failwith("netsys_pipe_unlisten: cannot stop pending ReadFile");
+	caml_failwith("netsys_pipe_unlisten: cannot stop pending ReadFile");
     };
     if (ph->pipe_wr_ovrlp_started) {
-	failwith("netsys_pipe_unlisten: cannot stop pending WriteFile");
+	caml_failwith("netsys_pipe_unlisten: cannot stop pending WriteFile");
     };
 
     dprintf("PIPE deafen %u successful\n",
@@ -1202,7 +1202,7 @@ CAMLprim value netsys_pipe_deafen(value phv) {
     return Val_unit;
 
 #else
-    invalid_argument("netsys_pipe_unlisten");
+    caml_invalid_argument("netsys_pipe_unlisten");
 #endif
 }
 
@@ -1272,7 +1272,7 @@ CAMLprim value netsys_pipe_connect(value name, value mode) {
     return r;
 
 #else
-    invalid_argument("netsys_pipe_connect");
+    caml_invalid_argument("netsys_pipe_connect");
 #endif
 }
 
@@ -1333,7 +1333,7 @@ CAMLprim value netsys_pipe_read(value phv, value s, value pos, value len) {
 
     return Val_int(l);
 #else
-    invalid_argument("netsys_pipe_read");
+    caml_invalid_argument("netsys_pipe_read");
 #endif
 }
 
@@ -1400,7 +1400,7 @@ CAMLprim value netsys_pipe_write(value phv, value s, value pos, value len) {
 
     return Val_int(l);
 #else
-    invalid_argument("netsys_pipe_write");
+    caml_invalid_argument("netsys_pipe_write");
 #endif
 }
 
@@ -1438,7 +1438,7 @@ CAMLprim value netsys_pipe_shutdown(value phv) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_pipe_shutdown");
+    caml_invalid_argument("netsys_pipe_shutdown");
 #endif
 }
 
@@ -1453,7 +1453,7 @@ CAMLprim value netsys_pipe_free(value phv) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_pipe_free");
+    caml_invalid_argument("netsys_pipe_free");
 #endif
 }
 
@@ -1469,7 +1469,7 @@ CAMLprim value netsys_pipe_conn_state(value phv) {
 
     return Val_int(ph->pipe_conn_state);
 #else
-    invalid_argument("netsys_pipe_conn_state");
+    caml_invalid_argument("netsys_pipe_conn_state");
 #endif
 }
 
@@ -1487,7 +1487,7 @@ CAMLprim value netsys_pipe_rd_event(value phv) {
 
     return alloc_event(ph->pipe_rd_ev);
 #else
-    invalid_argument("netsys_pipe_rd_event");
+    caml_invalid_argument("netsys_pipe_rd_event");
 #endif
 }
 
@@ -1505,7 +1505,7 @@ CAMLprim value netsys_pipe_wr_event(value phv) {
 
     return alloc_event(ph->pipe_wr_ev);
 #else
-    invalid_argument("netsys_pipe_wr_event");
+    caml_invalid_argument("netsys_pipe_wr_event");
 #endif
 }
 
@@ -1518,7 +1518,7 @@ CAMLprim value netsys_pipe_descr(value phv) {
 
     return netsysw32_win_alloc_handle(ph->pipe_descr);
 #else
-    invalid_argument("netsys_pipe_descr");
+    caml_invalid_argument("netsys_pipe_descr");
 #endif
 }
 
@@ -1530,7 +1530,7 @@ CAMLprim value netsys_set_auto_close_pipe_proxy(value phv, value flag) {
     ph->pipe_descr_auto_close = Bool_val(flag);
     return Val_unit;
 #else
-    invalid_argument("netsys_set_auto_close_pipe_proxy");
+    caml_invalid_argument("netsys_set_auto_close_pipe_proxy");
 #endif
 }
 
@@ -1546,7 +1546,7 @@ CAMLprim value netsys_pipe_signal(value phv, value ev) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_pipe_signal");
+    caml_invalid_argument("netsys_pipe_signal");
 #endif
 }
 
@@ -1658,7 +1658,7 @@ CAMLprim value netsys_create_process(value cmd,
 	      pass_std_handles = 1;
 	      break;
 	  default:
-	      invalid_argument("netsys_create_process [1]");
+	      caml_invalid_argument("netsys_create_process [1]");
 	  }
       }
       else {
@@ -1687,7 +1687,7 @@ CAMLprim value netsys_create_process(value cmd,
 	      pg_flags = 0;
 	      break;
 	  default:
-	      invalid_argument("netsys_create_process [2]");
+	      caml_invalid_argument("netsys_create_process [2]");
 	  }
       };
       opts_hd = Field(opts_hd,1);
@@ -1716,7 +1716,7 @@ CAMLprim value netsys_create_process(value cmd,
 	  pi.hProcess, pi.dwProcessId);
   return alloc_process(pi.hProcess, pi.dwProcessId);
 #else
-    invalid_argument("netsys_create_process");
+    caml_invalid_argument("netsys_create_process");
 #endif
 }
 
@@ -1751,7 +1751,7 @@ CAMLprim value netsys_search_path(value path_opt_v,
     if (pathlen < 256) pathlen = 256;
     cont = 1;
     while (cont) {
-	fullname = stat_alloc(pathlen);
+	fullname = caml_stat_alloc(pathlen);
 	code = SearchPath(path,
 			  file,
 			  ext,
@@ -1760,7 +1760,7 @@ CAMLprim value netsys_search_path(value path_opt_v,
 			  NULL);
 	cont = (code >= pathlen);
 	if (cont) {
-	    stat_free(fullname);
+	    caml_stat_free(fullname);
 	    pathlen = code+1;  /* space for NULL byte! */
 	}
     }
@@ -1768,16 +1768,16 @@ CAMLprim value netsys_search_path(value path_opt_v,
     caml_leave_blocking_section();
 
     if (code == 0) {
-	stat_free(fullname);
+	caml_stat_free(fullname);
 	errno = ENOENT;
 	uerror("netsys_search_path", file_v);
     };
 
     r = caml_copy_string(fullname);
-    stat_free(fullname);
+    caml_stat_free(fullname);
     return r;
 #else
-    invalid_argument("netsys_search_path");
+    caml_invalid_argument("netsys_search_path");
 #endif
 }
 
@@ -1794,7 +1794,7 @@ CAMLprim value netsys_terminate_process(value pv) {
     }
     return Val_unit;
 #else
-    invalid_argument("netsys_terminate_process");
+    caml_invalid_argument("netsys_terminate_process");
 #endif
 }
 
@@ -1807,7 +1807,7 @@ CAMLprim value netsys_process_descr(value pv) {
     p0 = process_val(pv);
     return netsysw32_win_alloc_handle(p0->proc_proxy);
 #else
-    invalid_argument("netsys_process_descr");
+    caml_invalid_argument("netsys_process_descr");
 #endif
 }
 
@@ -1819,7 +1819,7 @@ CAMLprim value netsys_set_auto_close_process_proxy(value pv, value flag) {
     p0->auto_close = Bool_val(flag);
     return Val_unit;
 #else
-    invalid_argument("netsys_set_auto_close_process_proxy");
+    caml_invalid_argument("netsys_set_auto_close_process_proxy");
 #endif
 }
 
@@ -1834,7 +1834,7 @@ CAMLprim value netsys_close_process(value pv) {
     };
     return Val_unit;
 #else
-    invalid_argument("netsys_close_process");
+    caml_invalid_argument("netsys_close_process");
 #endif
 }
 
@@ -1846,10 +1846,10 @@ CAMLprim value netsys_process_free(value pv) {
 	CloseHandle(p0->proc);
     if (p0->auto_close)
 	CloseHandle(p0->proc_proxy);
-    stat_free(p0);
+    caml_stat_free(p0);
     return Val_unit;
 #else
-    invalid_argument("netsys_close_process");
+    caml_invalid_argument("netsys_close_process");
 #endif
 }
 
@@ -1870,7 +1870,7 @@ CAMLprim value netsys_get_process_status(value pv) {
 	uerror("netsys_get_process_status/WaitForSingleObject", Nothing);
     };
     if (code != WAIT_OBJECT_0) {
-	invalid_argument("netsys_get_process_status [1]");
+	caml_invalid_argument("netsys_get_process_status [1]");
     };
     /* Now get the status: */
     code = GetExitCodeProcess(p0->proc, &status);
@@ -1882,7 +1882,7 @@ CAMLprim value netsys_get_process_status(value pv) {
     return Val_int(status);
 
 #else
-    invalid_argument("netsys_get_process_status");
+    caml_invalid_argument("netsys_get_process_status");
 #endif
 }
 
@@ -1893,7 +1893,7 @@ CAMLprim value netsys_as_process_event(value pv) {
     p0 = process_val(pv);
     return alloc_event(p0->proc);
 #else
-    invalid_argument("netsys_as_process_event");
+    caml_invalid_argument("netsys_as_process_event");
 #endif
 }
 
@@ -1915,7 +1915,7 @@ CAMLprim value netsys_emulated_pid(value pv) {
     };
     return Val_int(d);
 #else
-    invalid_argument("netsys_emulated_pid");
+    caml_invalid_argument("netsys_emulated_pid");
 #endif
 }
 
@@ -1926,7 +1926,7 @@ CAMLprim value netsys_win_pid(value pv) {
     p0 = process_val(pv);
     return Val_int(p0->win_pid);
 #else
-    invalid_argument("netsys_win_pid");
+    caml_invalid_argument("netsys_win_pid");
 #endif
 }
 
@@ -1935,7 +1935,7 @@ CAMLprim value netsys_has_console(value dummy) {
 #ifdef _WIN32
     return Val_bool(has_console());
 #else
-    invalid_argument("netsys_has_console");
+    caml_invalid_argument("netsys_has_console");
 #endif
 }
 
@@ -1950,7 +1950,7 @@ CAMLprim value netsys_is_console(value fd) {
     else
 	return Val_bool(1);
 #else
-    invalid_argument("netsys_is_console");
+    caml_invalid_argument("netsys_is_console");
 #endif
 }
 
@@ -1962,7 +1962,7 @@ CAMLprim value netsys_alloc_console(value dummy) {
     }
     return Val_unit;
 #else
-    invalid_argument("netsys_alloc_console");
+    caml_invalid_argument("netsys_alloc_console");
 #endif
 }
 
@@ -2001,7 +2001,7 @@ CAMLprim value netsys_get_console_attr(value dummy) {
 
     return r;
 #else
-    invalid_argument("netsys_get_console_attr");
+    caml_invalid_argument("netsys_get_console_attr");
 #endif
 }
 
@@ -2060,7 +2060,7 @@ CAMLprim value netsys_set_console_attr(value av) {
   
     return Val_unit;
 #else
-    invalid_argument("netsys_set_console_attr");
+    caml_invalid_argument("netsys_set_console_attr");
 #endif
 }
 
@@ -2092,7 +2092,7 @@ CAMLprim value netsys_get_console_info(value dummy) {
 
     return r;
 #else
-    invalid_argument("netsys_get_console_info");
+    caml_invalid_argument("netsys_get_console_info");
 #endif
 }
 
@@ -2146,7 +2146,7 @@ CAMLprim value netsys_get_console_mode(value dummy) {
 
     return r;
 #else
-    invalid_argument("netsys_get_console_mode");
+    caml_invalid_argument("netsys_get_console_mode");
 #endif
 }
 
@@ -2215,7 +2215,7 @@ CAMLprim value netsys_set_console_mode(value mv) {
     CloseHandle(conout);
     return Val_unit;
 #else
-    invalid_argument("netsys_set_console_mode");
+    caml_invalid_argument("netsys_set_console_mode");
 #endif
 }
 
@@ -2224,7 +2224,7 @@ CAMLprim value netsys_getacp(value dummy) {
 #ifdef _WIN32
     return Val_int(GetACP());
 #else
-    invalid_argument("netsys_getacp");
+    caml_invalid_argument("netsys_getacp");
 #endif
 }
 
@@ -2243,7 +2243,7 @@ CAMLprim value netsys_init_console_codepage(value dummy) {
     }
     return Val_unit;
 #else
-    invalid_argument("netsys_init_console_codepage");
+    caml_invalid_argument("netsys_init_console_codepage");
 #endif
 }
 
@@ -2338,7 +2338,7 @@ CAMLprim value netsys_clear_console(value mode) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_clear_console");
+    caml_invalid_argument("netsys_clear_console");
 #endif
 }
 
@@ -2347,7 +2347,7 @@ CAMLprim value netsys_get_current_thread_id(value dummy) {
 #ifdef _WIN32
     return caml_copy_int32(GetCurrentThreadId());
 #else
-    invalid_argument("netsys_get_current_thread_id");
+    caml_invalid_argument("netsys_get_current_thread_id");
 #endif
 }
 
@@ -2394,7 +2394,7 @@ CAMLprim value netsys_cancel_synchronous_io(value thread_id_val) {
 
     return Val_unit;
 #else
-    invalid_argument("netsys_cancel_synchronous_io");
+    caml_invalid_argument("netsys_cancel_synchronous_io");
 #endif
 }
 
@@ -2439,7 +2439,7 @@ static value fdset_to_fdlist(value fdlist, fd_set *fdset)
     for (/*nothing*/; fdlist != Val_int(0); fdlist = Field(fdlist, 1)) {
       s = Field(fdlist, 0);
       if (FD_ISSET(Socket_val(s), fdset)) {
-        value newres = alloc_small(2, 0);
+        value newres = caml_alloc_small(2, 0);
         Field(newres, 0) = s;
         Field(newres, 1) = res;
         res = newres;
@@ -2471,9 +2471,9 @@ CAMLprim value netsys_real_select(value readfds, value writefds,
 	&& writefds == Val_int(0)
 	&& exceptfds == Val_int(0)) {
       if ( tm > 0.0 ) {
-	enter_blocking_section();
+	caml_enter_blocking_section();
 	Sleep( (int)(tm * 1000));
-	leave_blocking_section();
+	caml_leave_blocking_section();
       }
       read_list = write_list = except_list = Val_int(0);
     } else {      
@@ -2487,10 +2487,10 @@ CAMLprim value netsys_real_select(value readfds, value writefds,
 	tv.tv_usec = (int) (1e6 * (tm - (int) tm));
 	tvp = &tv;
       }
-      enter_blocking_section();
+      caml_enter_blocking_section();
       if (select(FD_SETSIZE, &read, &write, &except, tvp) == -1)
         err = WSAGetLastError();
-      leave_blocking_section();
+      caml_leave_blocking_section();
       if (err) {
 	win32_maperr(err);
 	uerror("select", Nothing);
@@ -2499,7 +2499,7 @@ CAMLprim value netsys_real_select(value readfds, value writefds,
       write_list = fdset_to_fdlist(writefds, &write);
       except_list = fdset_to_fdlist(exceptfds, &except);
     }
-    res = alloc_small(3, 0);
+    res = caml_alloc_small(3, 0);
     Field(res, 0) = read_list;
     Field(res, 1) = write_list;
     Field(res, 2) = except_list;
@@ -2507,6 +2507,6 @@ CAMLprim value netsys_real_select(value readfds, value writefds,
   End_roots();
   return res;
 #else
-    invalid_argument("netsys_real_select");
+    caml_invalid_argument("netsys_real_select");
 #endif
 }

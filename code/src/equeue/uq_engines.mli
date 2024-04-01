@@ -354,25 +354,6 @@ val qseq_engine : 'a #engine -> ('a -> 'b #engine) -> 'b engine
       [qseq_engine] should be preferred for recursive chains of engines.
    *)
 
-class ['a] stream_seq_engine : 'a -> ('a -> 'a #engine) Stream.t -> 
-                               Unixqueue.event_system -> ['a] engine
-  (** [let se = new stream_seq_engine x0 s esys]: The constructed engine [se]
-    * fetches functions [f : 'a -> 'a #engine] from the stream [s], and
-    * runs the engines obtained by calling these functions [e = f x] one
-    * after the other. Each function call gets the result of the previous
-    * engine as argument. The first call gets [x0] as argument.
-    *
-    * If one of the engines [e] transitions into an error or aborted state,
-    * [se] will also do that. If [se] is aborted, this is passed down to
-    * the currently running engine [e].
-   *)
-
-
-val stream_seq_engine : 'a -> ('a -> 'a #engine) Stream.t -> 
-                         Unixqueue.event_system -> 'a engine
-  (** Same as function *)
-
-
 class ['a, 'b] sync_engine : 'a #engine -> 'b #engine -> ['a * 'b] engine
   (** This engine runs two engines in parallel, and waits until both
    * are [`Done] (synchronization). The product of the two [`Done] arguments 

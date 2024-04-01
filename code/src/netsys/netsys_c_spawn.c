@@ -61,8 +61,8 @@ CAMLprim value netsys_spawn_nat(value v_chdir,
     int cleanup_bsection;
 
     pid_t pid;
-    char **sub_argv;
-    char **sub_env;
+    unsigned char **sub_argv;
+    unsigned char **sub_env;
     int cleanup_sub_argv;
     int cleanup_sub_env;;
 
@@ -112,15 +112,15 @@ CAMLprim value netsys_spawn_nat(value v_chdir,
        In the calling process, the mask is reset below at [exit].
     */
     code = sigfillset(&mask);
-    if (code == -1) unix_error(EINVAL, "netsys_spawn/sigfillset [000]", 
+    if (code == -1) caml_unix_error(EINVAL, "netsys_spawn/sigfillset [000]", 
 			       Nothing);
 #ifdef HAVE_PTHREAD
     code = pthread_sigmask(SIG_SETMASK, &mask, &save_mask);
-    if (code != 0) unix_error(code, "netsys_spawn/pthread_sigmask [001]", 
+    if (code != 0) caml_unix_error(code, "netsys_spawn/pthread_sigmask [001]", 
 			      Nothing);
 #else
     code = sigprocmask(SIG_SETMASK, &mask, &save_mask);
-    if (code == -1) uerror("netsys_spawn/sigprocmask [002]", Nothing);
+    if (code == -1) caml_uerror("netsys_spawn/sigprocmask [002]", Nothing);
 #endif
     memcpy(&spawn_mask, &save_mask, sizeof(sigset_t));
 
@@ -473,11 +473,11 @@ main_exit:
     }
 
     if (uerror_errno != 0)
-	unix_error(uerror_errno, uerror_function, Nothing);
+	caml_unix_error(uerror_errno, uerror_function, Nothing);
 
     return return_value;
 #else
-     invalid_argument("netsys_spawn");
+     caml_invalid_argument("netsys_spawn");
 #endif
 }
 
@@ -614,7 +614,7 @@ CAMLprim value netsys_posix_spawn_nat(value v_pg,
 	    flags |= POSIX_SPAWN_SETPGROUP;
 	    break;
 	case 2: /* Pg_new_fg_group */
-	    invalid_argument
+	    caml_invalid_argument
 		("Netsys_posix.posix_spawn: Pg_new_fg_group not supported");
 	    break;
 	default:
@@ -638,7 +638,7 @@ CAMLprim value netsys_posix_spawn_nat(value v_pg,
 	    flags |= POSIX_SPAWN_SETSIGDEF;
 	    break;
 	case 1: /* Sig_ignore */
-	    invalid_argument
+	    caml_invalid_argument
 		("Netsys_posix.posix_spawn: Sig_ignore not supported");
 	    break;
 	case 2: /* Sig_mask */
@@ -800,15 +800,15 @@ main_exit:
     };
 
     if (uerror_errno != 0)
-	unix_error(uerror_errno, uerror_function, Nothing);
+	caml_unix_error(uerror_errno, uerror_function, Nothing);
 
     if (use_fork_exec != 0)
-	failwith("USE_FORK_EXEC");
+	caml_failwith("USE_FORK_EXEC");
 
     return return_value;
 
 #else
-     invalid_argument("netsys_posix_spawn not available");
+     caml_invalid_argument("netsys_posix_spawn not available");
 #endif
 }
 

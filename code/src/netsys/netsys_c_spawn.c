@@ -61,8 +61,8 @@ CAMLprim value netsys_spawn_nat(value v_chdir,
     int cleanup_bsection;
 
     pid_t pid;
-    unsigned char **sub_argv;
-    unsigned char **sub_env;
+    char **sub_argv;
+    char **sub_env;
     int cleanup_sub_argv;
     int cleanup_sub_env;;
 
@@ -357,8 +357,8 @@ CAMLprim value netsys_spawn_nat(value v_chdir,
 
     /* exec the new program: */
     code = execve(String_val(v_cmd),
-		  sub_argv,
-		  sub_env);
+		  (char * const *) sub_argv,
+		  (char * const *) sub_env);
     if (code == -1) SUB_ERROR(errno, "netsys_spawn/execve [290]");
 
     SUB_ERROR(EINVAL, "netsys_spawn/assert_execve [291]");

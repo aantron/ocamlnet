@@ -175,7 +175,7 @@ CAMLprim value netsys_sem_init(value memv,
     value r;
 
     init = Long_val(initv);
-    s = (sem_t *) (((char *) Bigarray_val(memv)->data) + Long_val(posv));
+    s = (sem_t *) (((char *) Caml_ba_array_val(memv)->data) + Long_val(posv));
     code = sem_init(s, Bool_val(psharedv), init);
     if (code == -1) caml_uerror("sem_init", Nothing);
     r = alloc_sem_block(s, 0);
@@ -192,7 +192,7 @@ CAMLprim value netsys_as_sem(value memv,
     sem_t *s;
     value r;
 
-    s = (sem_t *) (((char *) Bigarray_val(memv)->data) + Long_val(posv));
+    s = (sem_t *) (((char *) Caml_ba_array_val(memv)->data) + Long_val(posv));
     r = alloc_sem_block(s, 0);
     return r;
 #else

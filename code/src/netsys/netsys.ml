@@ -467,11 +467,7 @@ let gwrite_tstr fd_style fd ts pos len =
             | `Bytes s ->
 	        Unix.single_write fd s pos len
             | `String s ->
-                #ifdef HAVE_BYTES
                   Unix.single_write_substring fd s pos len
-                #else
-  	          Unix.single_write fd s pos len
-                #endif
             | `Memory s ->
                 Netsys_mem.mem_write fd s pos len
         )
@@ -481,11 +477,7 @@ let gwrite_tstr fd_style fd ts pos len =
             | `Bytes s ->
 	        Unix.send fd s pos len []
             | `String s ->
-                #ifdef HAVE_BYTES
 	          Unix.send_substring fd s pos len []
-                #else
-                  Unix.send fd s pos len []
-                #endif
             | `Memory s ->
                 Netsys_mem.mem_send fd s pos len []
         )

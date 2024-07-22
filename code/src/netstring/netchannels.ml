@@ -224,13 +224,7 @@ object (self)
 
   method really_input_string len = 
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       really_input_string ch len
-    #else
-      let buf = String.create len in
-      really_input ch buf 0 len;
-      buf
-    #endif
 
   method input_char () =
     if closed then self # complain_closed();
@@ -1022,11 +1016,7 @@ object (self)
 
   method really_output_string buf pos len =
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       monitored (output_substring ch buf pos) len
-    #else
-      monitored (output ch buf pos) len
-    #endif
 
   method output_char c =
     if closed then self # complain_closed();
@@ -1038,11 +1028,7 @@ object (self)
 
   method output_bytes s =
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       monitored (output_bytes ch) s
-    #else
-      monitored (output_string ch) s
-    #endif
 
   method output_byte b =
     if closed then self # complain_closed();
@@ -1124,20 +1110,12 @@ object(self)
 
   method output buf pos len =
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       Buffer.add_subbytes buffer buf pos len;
-    #else
-      Buffer.add_substring buffer buf pos len;
-    #endif
     len
 
   method really_output buf pos len =
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       Buffer.add_subbytes buffer buf pos len;
-    #else
-      Buffer.add_substring buffer buf pos len;
-    #endif
 
   method really_output_string buf pos len =
     if closed then self # complain_closed();
@@ -1153,11 +1131,7 @@ object(self)
 
   method output_bytes s =
     if closed then self # complain_closed();
-    #ifdef HAVE_BYTES
       Buffer.add_bytes buffer s
-    #else
-      Buffer.add_string buffer s
-    #endif
 
   method output_byte b =
     if closed then self # complain_closed();

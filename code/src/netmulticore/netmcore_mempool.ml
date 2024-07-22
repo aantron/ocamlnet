@@ -666,11 +666,7 @@ let create_mempool ?(alloc_really=false) size =
   if alloc_really then (
     for k = 0 to size/page_size-1 do
       ignore(Unix.lseek fd (k*page_size) Unix.SEEK_SET);
-      #ifdef HAVE_BYTES
         ignore(Unix.write_substring fd "\000" 0 1);
-      #else
-        ignore(Unix.write fd "\000" 0 1);
-      #endif
     done;
     ignore(Unix.lseek fd 0 Unix.SEEK_SET);
   );

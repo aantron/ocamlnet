@@ -82,11 +82,7 @@ let descr_input_line fd = (* unbuffered! *)
     try
       let n = Unix.read fd s 0 1 in
       if n > 0 && Bytes.get s 0 <> '\n' then (
-        #ifdef HAVE_BYTES
 	  Buffer.add_bytes b s;
-        #else
-          Buffer.add_string b (Bytes.unsafe_to_string s);
-        #endif
 	raise(Unix.Unix_error(Unix.EINTR,"",""))
       )
     with
